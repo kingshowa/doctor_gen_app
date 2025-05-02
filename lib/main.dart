@@ -1,3 +1,7 @@
+import 'package:doctor_gen_app/pages/chat_with_bot_page.dart';
+import 'package:doctor_gen_app/pages/speak_to_bot_page.dart';
+import 'package:doctor_gen_app/pages/tips_page.dart';
+import 'package:doctor_gen_app/pages/profile_page.dart';
 import 'package:flutter/material.dart';
 import 'package:doctor_gen_app/pages/home_page.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -49,6 +53,15 @@ class MyApp extends StatelessWidget {
           ),
           iconTheme: const IconThemeData(color: Colors.white),
         ),
+
+        inputDecorationTheme: InputDecorationTheme(
+          filled: true,
+          fillColor: const Color(0xff2c3234),
+          border: OutlineInputBorder(
+            borderSide: BorderSide.none,
+            borderRadius: BorderRadius.circular(14),
+          ),
+        ),
       ),
 
       // Dark theme
@@ -88,9 +101,29 @@ class MyApp extends StatelessWidget {
           ),
           iconTheme: const IconThemeData(color: Colors.white),
         ),
+
+        inputDecorationTheme: InputDecorationTheme(
+          filled: true,
+          fillColor: const Color(0xff2c3234),
+          border: OutlineInputBorder(
+            borderSide: BorderSide.none,
+            borderRadius: BorderRadius.circular(14),
+          ),
+        ),
       ),
       themeMode: ThemeMode.dark,
-      home: const HomePage(),
+
+      //home: const HomePage(),
+      initialRoute: '/home',
+      routes: {
+        // When navigating to the "/" route, build the FirstScreen widget.
+        '/home': (context) => const HomePage(),
+        // When navigating to the "/second" route, build the SecondScreen widget.
+        '/chat': (context) => const ChatWithBotPage(),
+        '/talk': (context) => const SpeakToBotPage(),
+        '/tips': (context) => const TipsPage(),
+        '/profile': (context) => const ProfilePage(),
+      },
     );
   }
 }

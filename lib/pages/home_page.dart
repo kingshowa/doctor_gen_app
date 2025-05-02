@@ -23,14 +23,9 @@ class HomePage extends StatelessWidget {
               children: [
                 ActionCard(
                   icon: Icons.edit_document,
-                  text: "Generate health advice and remedy ideas instantly.",
+                  text: "Generate health advice and remedy ideas now.",
                   onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const ChatWithBotPage(),
-                      ),
-                    );
+                    Navigator.pushNamed(context, '/chat');
                   },
                 ),
                 const SizedBox(width: 16),
@@ -38,12 +33,7 @@ class HomePage extends StatelessWidget {
                   icon: Icons.tips_and_updates_outlined,
                   text: "Your daily health recommendations nd tips.",
                   onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const SpeakToBotPage(),
-                      ),
-                    );
+                    Navigator.pushNamed(context, '/talk');
                   },
                 ),
               ],
@@ -62,7 +52,9 @@ class HomePage extends StatelessWidget {
               runSpacing: 14,
               children: List.generate(8, (index) {
                 return ListTile(
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.pushNamed(context, "/chat");
+                  },
                   titleTextStyle: Theme.of(
                     context,
                   ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
