@@ -1,5 +1,3 @@
-import 'package:doctor_gen_app/pages/chat_with_bot_page.dart';
-import 'package:doctor_gen_app/pages/speak_to_bot_page.dart';
 import 'package:doctor_gen_app/widgets/action_card.dart';
 import 'package:doctor_gen_app/widgets/bottom_nav_bar.dart';
 import 'package:doctor_gen_app/widgets/bunner_card.dart';

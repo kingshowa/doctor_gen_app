@@ -2,14 +2,14 @@ import 'package:doctor_gen_app/models/message.dart';
 
 List<Message> messages = [
   Message(
-    type: MessageType.media,
+    type: MessageType.text,
     sender: MessageSender.user,
-    mediaUrl: 'assets/images/Designer.jpeg',
+    text: "Hello! I have a question about my health.",
   ),
   Message(
     type: MessageType.text,
     sender: MessageSender.bot,
-    text: "I see you've shared an image. What would you like to know about it?",
+    text: "Sure! What would you like to know?",
   ),
   Message(
     type: MessageType.text,
@@ -20,7 +20,8 @@ List<Message> messages = [
   Message(
     type: MessageType.media,
     sender: MessageSender.bot,
-    mediaUrl: 'assets/images/Designer.jpeg',
+    mediaUrl:
+        'https://calfreshhealthyliving.cdph.ca.gov/en/PublishingImages/eat-healthy/fruitPlate.jpg',
     text:
         "To boost your energy, focus on foods rich in protein, complex carbs, and healthy fats. Here are some great options: bananas, oats, eggs, nuts, and yogurt. These help maintain steady energy levels throughout the day.",
   ),

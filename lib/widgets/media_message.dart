@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:doctor_gen_app/models/message.dart';
 import 'package:flutter/material.dart';
 
@@ -25,12 +27,29 @@ class MediaMessage extends StatelessWidget {
                 // Image
                 ClipRRect(
                   borderRadius: BorderRadius.circular(12),
-                  child: Image.asset(
-                    message.mediaUrl!,
-                    height: 350,
-                    width: double.maxFinite,
-                    fit: BoxFit.cover,
-                  ),
+                  child:
+                      message.sender == MessageSender.bot
+                          ? Image.network(
+                            message.mediaUrl!,
+                            height: 350,
+                            width: double.maxFinite,
+                            fit: BoxFit.cover,
+                          )
+                          : // For user messages, use FileImage
+                          message.mediaUrl == null
+                          ? const SizedBox()
+                          : // Check if the file exists before displaying it
+                          message.mediaUrl!.isEmpty
+                          ? const SizedBox()
+                          : // Display the image from the file path
+                          // Use FileImage to load the image from the file path
+                          // Ensure you have the necessary permissions to access the file
+                          Image.file(
+                            File(message.mediaUrl!),
+                            height: 350,
+                            width: double.maxFinite,
+                            fit: BoxFit.cover,
+                          ),
                 ),
 
                 // Caption
