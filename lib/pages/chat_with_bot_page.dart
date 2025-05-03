@@ -132,6 +132,8 @@ class _ChatWithBotPageState extends State<ChatWithBotPage> {
               const SizedBox(height: 18),
               TextFormField(
                 controller: _textController,
+                minLines: 1,
+                maxLines: 3,
                 textCapitalization: TextCapitalization.sentences,
                 decoration: InputDecoration(
                   prefixIcon: IconButton(
