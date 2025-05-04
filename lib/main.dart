@@ -2,6 +2,7 @@ import 'package:doctor_gen_app/pages/chat_with_bot_page.dart';
 import 'package:doctor_gen_app/pages/speak_to_bot_page.dart';
 import 'package:doctor_gen_app/pages/tips_page.dart';
 import 'package:doctor_gen_app/pages/profile_page.dart';
+import 'package:doctor_gen_app/widgets/bottom_nav_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:doctor_gen_app/pages/home_page.dart';
 import 'package:google_fonts/google_fonts.dart';

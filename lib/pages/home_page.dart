@@ -8,6 +8,15 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    List<String> history = [
+      "How to manage stress and anxiety during exams?",
+      "What are the best exercises for weight loss?",
+      "How to improve sleep quality?",
+      "What are the benefits of meditation?",
+      "How to maintain a balanced diet?",
+      "What are the symptoms of dehydration?",
+    ];
+
     return Scaffold(
       body: SafeArea(
         child: ListView(
@@ -31,7 +40,7 @@ class HomePage extends StatelessWidget {
                   icon: Icons.tips_and_updates_outlined,
                   text: "Your daily health recommendations nd tips.",
                   onPressed: () {
-                    Navigator.pushNamed(context, '/talk');
+                    Navigator.pushNamed(context, '/tips');
                   },
                 ),
               ],
@@ -48,7 +57,7 @@ class HomePage extends StatelessWidget {
 
             Wrap(
               runSpacing: 14,
-              children: List.generate(8, (index) {
+              children: List.generate(history.length, (index) {
                 return ListTile(
                   onTap: () {
                     Navigator.pushNamed(context, "/chat");
@@ -56,8 +65,8 @@ class HomePage extends StatelessWidget {
                   titleTextStyle: Theme.of(
                     context,
                   ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
-                  title: const Text(
-                    "Some long text to be entered here and see the results it shows",
+                  title: Text(
+                    history[index],
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -69,7 +78,7 @@ class HomePage extends StatelessWidget {
           ],
         ),
       ),
-      bottomNavigationBar: BottomNavBar(),
+      bottomNavigationBar: BottomNavBar(selectedIndex: 0),
     );
   }
 }

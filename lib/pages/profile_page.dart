@@ -1,3 +1,4 @@
+import 'package:doctor_gen_app/widgets/bottom_nav_bar.dart';
 import 'package:flutter/material.dart';
 
 class ProfilePage extends StatelessWidget {
@@ -38,6 +39,8 @@ class ProfilePage extends StatelessWidget {
           ),
         ],
       ),
+
+      bottomNavigationBar: BottomNavBar(selectedIndex: 4),
     );
   }
 }

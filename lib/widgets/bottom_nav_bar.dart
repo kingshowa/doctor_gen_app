@@ -1,23 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-class BottomNavBar extends StatefulWidget {
-  const BottomNavBar({super.key});
+// ignore: must_be_immutable
+class BottomNavBar extends StatelessWidget {
+  BottomNavBar({super.key, required this.selectedIndex});
 
-  @override
-  State<BottomNavBar> createState() => _BottomNavBarState();
-}
+  int selectedIndex;
 
-class _BottomNavBarState extends State<BottomNavBar> {
-  int _selectedIndex = 0;
+  void _onItemTapped(int index, BuildContext context) {
+    // Update the selected index
 
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
+    print(selectedIndex);
     switch (index) {
       case 0:
-        Navigator.pushNamed(context, '/home');
+        selectedIndex != 0 ? Navigator.pushNamed(context, '/home') : "";
         break;
       case 1:
         Navigator.pushNamed(context, '/chat');
@@ -29,7 +25,8 @@ class _BottomNavBarState extends State<BottomNavBar> {
         Navigator.pushNamed(context, '/tips');
         break;
       case 4:
-        Navigator.pushNamed(context, '/profile');
+        selectedIndex != 4 ? Navigator.pushNamed(context, '/profile') : "";
+
         break;
     }
   }
@@ -70,8 +67,8 @@ class _BottomNavBarState extends State<BottomNavBar> {
           label: 'Profile',
         ),
       ],
-      currentIndex: _selectedIndex, // Set the initial selected index
-      onTap: _onItemTapped,
+      currentIndex: selectedIndex, // Set the initial selected index
+      onTap: (int index) => _onItemTapped(index, context),
     );
   }
 }
