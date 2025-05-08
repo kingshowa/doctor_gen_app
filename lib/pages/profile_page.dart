@@ -11,7 +11,7 @@ class ProfilePage extends StatelessWidget {
         title: const Text("Profile"),
         actions: [
           IconButton(
-            icon: const Icon(Icons.settings),
+            icon: const Icon(Icons.more_horiz),
             onPressed: () {
               // Handle settings action
             },
@@ -21,14 +21,43 @@ class ProfilePage extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: [
-          CircleAvatar(
-            radius: 50,
-            backgroundImage: AssetImage("assets/images/profile.png"),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              CircleAvatar(
+                radius: 50,
+                backgroundImage: AssetImage("assets/images/profile.jpg"),
+              ),
+              const SizedBox(width: 40),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Kingstone Showa",
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20,
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+                  Text("@healthykingshowa"),
+                  const SizedBox(height: 5),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Theme.of(context).colorScheme.primary,
+                    ),
+                    onPressed: () {
+                      // Handle edit profile action
+                    },
+                    child: const Text(
+                      "Edit Profile",
+                      style: TextStyle(color: Colors.black),
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
-          const SizedBox(height: 20),
-          Text("User Name"),
-          const SizedBox(height: 10),
-          Text("hhfhfhfhfff"),
           const SizedBox(height: 20),
           ListTile(
             leading: Icon(Icons.person),
