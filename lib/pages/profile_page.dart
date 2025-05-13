@@ -48,7 +48,7 @@ class ProfilePage extends StatelessWidget {
                       backgroundColor: Theme.of(context).colorScheme.primary,
                     ),
                     onPressed: () {
-                      // Handle edit profile action
+                      Navigator.pushNamed(context, '/edit_profile');
                     },
                     child: const Text(
                       "Edit Profile",

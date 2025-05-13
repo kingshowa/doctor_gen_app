@@ -82,7 +82,7 @@ class _TipsPageState extends State<TipsPage> {
                                       ),
                                     ),
                                     Image.asset(
-                                      tip.imageUrl!,
+                                      tip.imageUrl,
                                       height: 400,
                                       width: double.maxFinite,
                                     ),
@@ -99,7 +99,7 @@ class _TipsPageState extends State<TipsPage> {
                                 child: Align(
                                   alignment: Alignment.centerLeft,
                                   child: Text(
-                                    tip.title!,
+                                    tip.title,
                                     style: const TextStyle(
                                       fontSize: 22,
                                       fontWeight: FontWeight.bold,
@@ -114,7 +114,7 @@ class _TipsPageState extends State<TipsPage> {
                                 child: Align(
                                   alignment: Alignment.centerLeft,
                                   child: Text(
-                                    tip.description!,
+                                    tip.description,
                                     style: TextStyle(
                                       color: const Color(0xffffffff),
                                       fontWeight: FontWeight.bold,
