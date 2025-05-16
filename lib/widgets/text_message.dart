@@ -1,5 +1,6 @@
 import 'package:doctor_gen_app/models/message.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class TextMessage extends StatelessWidget {
   const TextMessage({super.key, required this.message});
@@ -9,18 +10,6 @@ class TextMessage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.sizeOf(context);
-    // return Container(
-    //   padding: const EdgeInsets.all(14),
-    //   constraints: BoxConstraints(maxWidth: size.width * 0.75),
-    //   decoration: BoxDecoration(
-    //     color: message.backgroundColor,
-    //     borderRadius: message.borderRadius,
-    //   ),
-    //   child: Text(
-    //     message.text!,
-    //     style: TextStyle(color: message.textColor, fontWeight: FontWeight.bold),
-    //   ),
-    // );
 
     return ConstrainedBox(
       constraints: BoxConstraints(maxWidth: size.width * 0.75),
@@ -59,7 +48,13 @@ class TextMessage extends StatelessWidget {
                 ),
                 const Spacer(),
                 IconButton.outlined(
-                  onPressed: () {},
+                  onPressed: () {
+                    // Copy to clipboard
+                    Clipboard.setData(ClipboardData(text: message.text!));
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text("Copied to clipboard")),
+                    );
+                  },
                   icon: const Icon(Icons.copy),
                 ),
               ],
