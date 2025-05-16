@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:doctor_gen_app/models/message.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class MediaMessage extends StatelessWidget {
   const MediaMessage({super.key, required this.message});
@@ -84,7 +85,13 @@ class MediaMessage extends StatelessWidget {
                 ),
                 const Spacer(),
                 IconButton.outlined(
-                  onPressed: () {},
+                  onPressed: () {
+                    // Copy to clipboard
+                    Clipboard.setData(ClipboardData(text: message.text!));
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text("Copied to clipboard")),
+                    );
+                  },
                   icon: const Icon(Icons.copy),
                 ),
               ],
