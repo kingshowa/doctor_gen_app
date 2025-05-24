@@ -8,7 +8,7 @@ plugins {
 android {
     namespace = "com.example.doctor_gen_app"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion || "27.0.12077973"
+    ndkVersion = "27.0.12077973"
     // The NDK version is set to 27.0.12077973 by default, but you can change it to a different version if needed.
 
     compileOptions {
