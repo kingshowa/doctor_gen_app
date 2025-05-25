@@ -126,7 +126,7 @@ class MyApp extends StatelessWidget {
         '/tips': (context) => const TipsPage(),
         '/profile': (context) => const ProfilePage(),
         '/edit_profile': (context) => const EditProfilePage(),
-        '/login': (context) => const LoginPage(),
+        '/login': (context) => LoginPage(),
       },
     );
   }
