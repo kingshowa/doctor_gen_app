@@ -109,7 +109,6 @@ class EditProfilePage extends StatelessWidget {
                     onPressed: () {
                       // Save changes logic here
                     },
-                    child: const Text('Save Changes'),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xff7dd4fb),
                       foregroundColor: Colors.black,
@@ -122,6 +121,7 @@ class EditProfilePage extends StatelessWidget {
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
+                    child: const Text('Save Changes'),
                   ),
                 ),
               ],
