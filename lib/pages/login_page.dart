@@ -113,10 +113,7 @@ class LoginPage extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  SocialIconButton(
-                    icon: Icons.contact_emergency_sharp,
-                    onTap: () {},
-                  ),
+                  SocialIconButton(icon: Icons.contacts, onTap: () {}),
                   const SizedBox(width: 20),
                   SocialIconButton(icon: Icons.facebook, onTap: () {}),
                   const SizedBox(width: 20),
