@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class LoginPage extends StatelessWidget {
+  const LoginPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -149,7 +151,7 @@ class SocialIconButton extends StatelessWidget {
   final IconData icon;
   final VoidCallback onTap;
 
-  const SocialIconButton({required this.icon, required this.onTap});
+  const SocialIconButton({super.key, required this.icon, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
