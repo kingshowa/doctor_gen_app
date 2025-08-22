@@ -7,8 +7,19 @@ import 'package:doctor_gen_app/pages/login_page.dart';
 import 'package:flutter/material.dart';
 import 'package:doctor_gen_app/pages/home_page.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_gemini/flutter_gemini.dart';
 
 void main() {
+  const apiKey = 'AIzaSyBmMLSeXaKQK3QsNfTMN96LKA9ECi4Qf6k';
+
+  Gemini.init(apiKey: apiKey, enableDebugging: true);
+
+  Gemini.instance
+      .prompt(parts: [Part.text('Write a story about a magic backpack')])
+      .then((value) {
+        print(value?.output);
+      });
+
   runApp(const MyApp());
 }
 
