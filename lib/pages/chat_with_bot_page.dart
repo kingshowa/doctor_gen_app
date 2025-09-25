@@ -1,11 +1,13 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:doctor_gen_app/consts.dart';
 import 'package:doctor_gen_app/data/messages.dart';
 import 'package:doctor_gen_app/models/message.dart';
 import 'package:doctor_gen_app/widgets/media_message.dart';
 import 'package:doctor_gen_app/widgets/text_message.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gemini/flutter_gemini.dart';
 import 'package:image_picker/image_picker.dart';
 
 class ChatWithBotPage extends StatefulWidget {
@@ -24,6 +26,9 @@ class _ChatWithBotPageState extends State<ChatWithBotPage> {
   @override
   void initState() {
     super.initState();
+
+    // Initialize Gemini
+    Gemini.init(apiKey: API_KEY, enableDebugging: true);
 
     _textController.addListener(() {
       setState(() {
@@ -44,7 +49,7 @@ class _ChatWithBotPageState extends State<ChatWithBotPage> {
     });
   }
 
-  void _sendMessage() {
+  void _sendMessage() async {
     final text = _textController.text.trim();
     if (text.isEmpty) return;
 
@@ -57,6 +62,36 @@ class _ChatWithBotPageState extends State<ChatWithBotPage> {
     });
 
     _scrollToBottom();
+
+    // Call Gemini AI
+    try {
+      final response = await Gemini.instance.prompt(parts: [Part.text(text)]);
+
+      final botReply = response?.output ?? "Sorry, I couldn’t process that.";
+
+      setState(() {
+        messages.add(
+          Message(
+            text: botReply,
+            type: MessageType.text,
+            sender: MessageSender.bot,
+          ),
+        );
+      });
+
+      _scrollToBottom();
+    } catch (e) {
+      setState(() {
+        messages.add(
+          Message(
+            text: "Error: $e",
+            type: MessageType.text,
+            sender: MessageSender.bot,
+          ),
+        );
+      });
+      _scrollToBottom();
+    }
   }
 
   Future<void> _pickImage() async {
