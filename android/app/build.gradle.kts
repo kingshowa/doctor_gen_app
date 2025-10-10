@@ -5,11 +5,25 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
 }
 
+dependencies {
+    // Kotlin stdlib is optional, remove if you want
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.9.24")
+
+    // Fix CameraX missing dependency
+    implementation("androidx.concurrent:concurrent-futures:1.1.0")
+
+    // Force stable CameraX instead of buggy beta
+    implementation("androidx.camera:camera-core:1.3.3")
+    implementation("androidx.camera:camera-camera2:1.3.3")
+    implementation("androidx.camera:camera-lifecycle:1.3.3")
+    implementation("androidx.camera:camera-view:1.3.3")
+    implementation("androidx.camera:camera-extensions:1.3.3")
+}
+
 android {
     namespace = "com.example.doctor_gen_app"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = "27.0.12077973"
-    // The NDK version is set to 27.0.12077973 by default, but you can change it to a different version if needed.
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
@@ -21,20 +35,37 @@ android {
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId = "com.example.doctor_gen_app"
-        // You can update the following values to match your application needs.
-        // For more information, see: https://flutter.dev/to/review-gradle-config.
-        minSdk = flutter.minSdkVersion
+        minSdk = 23 // keep only one definition
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+
+        ndk {
+            abiFilters += setOf("armeabi-v7a", "arm64-v8a", "x86_64")
+        }
+
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    // packagingOptions must be here, not inside defaultConfig
+    packagingOptions {
+        jniLibs {
+            excludes += setOf(
+                "META-INF/DEPENDENCIES",
+                "META-INF/LICENSE",
+                "META-INF/LICENSE.txt",
+                "META-INF/license.txt",
+                "META-INF/NOTICE",
+                "META-INF/NOTICE.txt",
+                "META-INF/notice.txt",
+                "META-INF/ASL2.0"
+            )
+        }
     }
 
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig = signingConfigs.getByName("debug")
         }
     }
