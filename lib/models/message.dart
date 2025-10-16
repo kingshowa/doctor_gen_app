@@ -5,8 +5,15 @@ class Message {
   final MessageSender sender;
   final String? text;
   final String? mediaUrl;
+  final int? chatId;
 
-  Message({required this.type, required this.sender, this.text, this.mediaUrl});
+  Message({
+    required this.type,
+    required this.sender,
+    this.text,
+    this.mediaUrl,
+    this.chatId,
+  });
 }
 
 extension MessageExtension on Message {

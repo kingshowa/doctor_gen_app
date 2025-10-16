@@ -37,7 +37,11 @@ class BunnerCard extends StatelessWidget {
                   const SizedBox(height: 12),
                   ElevatedButton.icon(
                     onPressed: () {
-                      Navigator.pushNamed(context, '/chat');
+                      Navigator.pushNamed(
+                        context,
+                        '/chat',
+                        arguments: {"id": null},
+                      );
                     },
                     icon: Icon(Icons.bolt),
                     style: ElevatedButton.styleFrom(

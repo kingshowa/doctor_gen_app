@@ -7,13 +7,13 @@ import 'package:doctor_gen_app/pages/login_page.dart';
 import 'package:flutter/material.dart';
 import 'package:doctor_gen_app/pages/home_page.dart';
 import 'package:google_fonts/google_fonts.dart';
-// import 'package:flutter_gemini/flutter_gemini.dart';
-// import 'package:doctor_gen_app/consts.dart';
+import 'package:flutter_gemini/flutter_gemini.dart';
+import 'package:doctor_gen_app/consts.dart';
 
 void main() {
-  // const apiKey = API_KEY;
+  const apiKey = API_KEY;
 
-  // Gemini.init(apiKey: apiKey, enableDebugging: true);
+  Gemini.init(apiKey: apiKey, enableDebugging: true);
 
   // Gemini.instance
   //     .prompt(parts: [Part.text('Write a story about a magic backpack')])

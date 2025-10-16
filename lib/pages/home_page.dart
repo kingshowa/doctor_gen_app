@@ -32,7 +32,11 @@ class HomePage extends StatelessWidget {
                   icon: Icons.edit_document,
                   text: "Generate health advice and remedy ideas now.",
                   onPressed: () {
-                    Navigator.pushNamed(context, '/chat');
+                    Navigator.pushNamed(
+                      context,
+                      '/chat',
+                      arguments: {"id": null},
+                    );
                   },
                 ),
                 const SizedBox(width: 16),
@@ -60,7 +64,7 @@ class HomePage extends StatelessWidget {
               children: List.generate(history.length, (index) {
                 return ListTile(
                   onTap: () {
-                    Navigator.pushNamed(context, "/chat");
+                    Navigator.pushNamed(context, "/chat", arguments: {"id": 1});
                   },
                   titleTextStyle: Theme.of(
                     context,

@@ -1,6 +1,6 @@
 import 'package:doctor_gen_app/models/message.dart';
 
-List<Message> messages = [
+List<Message> staticMessages = [
   Message(
     type: MessageType.text,
     sender: MessageSender.user,

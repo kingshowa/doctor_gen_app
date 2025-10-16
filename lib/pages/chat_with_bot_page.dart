@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'dart:io';
-import 'package:doctor_gen_app/consts.dart';
-import 'package:doctor_gen_app/data/messages.dart';
+import 'package:doctor_gen_app/data/staticMessages.dart';
 import 'package:doctor_gen_app/models/message.dart';
 import 'package:doctor_gen_app/widgets/media_message.dart';
 import 'package:doctor_gen_app/widgets/text_message.dart';
+import 'package:doctor_gen_app/database/db_helper.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gemini/flutter_gemini.dart';
@@ -23,14 +23,15 @@ class _ChatWithBotPageState extends State<ChatWithBotPage> {
   final ImagePicker _picker = ImagePicker();
 
   bool _isTyping = false;
-  bool _botTyping = false; // 👈 Added this
+  bool _botTyping = false; // Added this
   File? _selectedImage;
+
+  List<Message> messages = [];
+  int? chat_id = null;
 
   @override
   void initState() {
     super.initState();
-
-    Gemini.init(apiKey: API_KEY, enableDebugging: true);
 
     _textController.addListener(() {
       setState(() {
@@ -49,7 +50,7 @@ class _ChatWithBotPageState extends State<ChatWithBotPage> {
     });
   }
 
-  /// 🧠 Send text + optional image to Gemini
+  /// Send text + optional image to Gemini
   void _sendMessage() async {
     final text = _textController.text.trim();
     if (text.isEmpty && _selectedImage == null) return;
@@ -62,11 +63,14 @@ class _ChatWithBotPageState extends State<ChatWithBotPage> {
           mediaUrl: _selectedImage?.path,
           type: _selectedImage != null ? MessageType.media : MessageType.text,
           sender: MessageSender.user,
+          chatId: chat_id,
         ),
       );
       _textController.clear();
       _isTyping = false;
-      _botTyping = true; // 👈 Show typing bubble
+      _botTyping = true; // Show typing bubble
+      // Save to DB
+      DBHelper().addMessage(messages.last);
     });
 
     _scrollToBottom();
@@ -192,6 +196,23 @@ class _ChatWithBotPageState extends State<ChatWithBotPage> {
 
   @override
   Widget build(BuildContext context) {
+    final args = ModalRoute.of(context)!.settings.arguments as Map;
+    final id = args['id'];
+    chat_id = id;
+
+    if (id != null) {
+      messages = staticMessages;
+    }
+    if (id == null && messages.isEmpty) {
+      messages.add(
+        Message(
+          type: MessageType.text,
+          sender: MessageSender.bot,
+          text: "Hello! I am your medical assistant. How can I help you today?",
+        ),
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: const Text("Chat with AI Bot"),
