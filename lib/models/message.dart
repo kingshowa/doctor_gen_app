@@ -6,6 +6,7 @@ class Message {
   final String? text;
   final String? mediaUrl;
   final int? chatId;
+  final DateTime? timestamp;
 
   Message({
     required this.type,
@@ -13,7 +14,30 @@ class Message {
     this.text,
     this.mediaUrl,
     this.chatId,
+    this.timestamp,
   });
+
+  factory Message.fromMap(Map<String, dynamic> map) {
+    return Message(
+      chatId: map['chat_id'] as int,
+      sender: MessageSender.values.firstWhere((e) => e.name == map['sender']),
+      type: MessageType.values.firstWhere((e) => e.name == map['type']),
+      text: map['message'] as String,
+      mediaUrl: map['media_url'] as String?,
+      timestamp: DateTime.parse(map['timestamp']),
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'chat_id': chatId,
+      'sender': sender,
+      'type': type,
+      'message': text,
+      'media_url': mediaUrl,
+      'timestamp': timestamp?.toIso8601String(),
+    };
+  }
 }
 
 extension MessageExtension on Message {

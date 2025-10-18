@@ -27,7 +27,7 @@ class _ChatWithBotPageState extends State<ChatWithBotPage> {
   File? _selectedImage;
 
   List<Message> messages = [];
-  int? chat_id = null;
+  int? chatId = null;
 
   @override
   void initState() {
@@ -51,7 +51,7 @@ class _ChatWithBotPageState extends State<ChatWithBotPage> {
   }
 
   /// Send text + optional image to Gemini
-  void _sendMessage() async {
+  Future<void> _sendMessage() async {
     final text = _textController.text.trim();
     if (text.isEmpty && _selectedImage == null) return;
 
@@ -63,16 +63,15 @@ class _ChatWithBotPageState extends State<ChatWithBotPage> {
           mediaUrl: _selectedImage?.path,
           type: _selectedImage != null ? MessageType.media : MessageType.text,
           sender: MessageSender.user,
-          chatId: chat_id,
+          chatId: chatId,
         ),
       );
       _textController.clear();
       _isTyping = false;
       _botTyping = true; // Show typing bubble
-      // Save to DB
-      DBHelper().addMessage(messages.last);
     });
-
+    // Save to DB
+    chatId = await DBHelper().addMessage(messages.last);
     _scrollToBottom();
 
     try {
@@ -114,9 +113,11 @@ class _ChatWithBotPageState extends State<ChatWithBotPage> {
             text: botReply,
             type: MessageType.text,
             sender: MessageSender.bot,
+            chatId: chatId,
           ),
         );
         _selectedImage = null;
+        DBHelper().addMessage(messages.last);
       });
 
       _scrollToBottom();
@@ -125,12 +126,15 @@ class _ChatWithBotPageState extends State<ChatWithBotPage> {
         _botTyping = false;
         messages.add(
           Message(
-            text: "Error: $e",
+            // text: "Error: $e",
+            text: "Sorry, something went wrong. Please try again.",
             type: MessageType.text,
             sender: MessageSender.bot,
+            chatId: chatId,
           ),
         );
         _selectedImage = null;
+        DBHelper().addMessage(messages.last);
       });
       _scrollToBottom();
     }
@@ -195,24 +199,38 @@ class _ChatWithBotPageState extends State<ChatWithBotPage> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    final args = ModalRoute.of(context)!.settings.arguments as Map;
-    final id = args['id'];
-    chat_id = id;
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _loadMessages();
+  }
+
+  Future<void> _loadMessages() async {
+    final args = ModalRoute.of(context)?.settings.arguments as Map?;
+    final id = args?['id'];
+    chatId = id;
 
     if (id != null) {
-      messages = staticMessages;
+      final loadedMessages = await DBHelper().getMessagesByChat(id);
+      setState(() {
+        messages = loadedMessages;
+      });
     }
     if (id == null && messages.isEmpty) {
-      messages.add(
-        Message(
-          type: MessageType.text,
-          sender: MessageSender.bot,
-          text: "Hello! I am your medical assistant. How can I help you today?",
-        ),
-      );
+      setState(() {
+        messages.add(
+          Message(
+            type: MessageType.text,
+            sender: MessageSender.bot,
+            text:
+                "Hello! I am your medical assistant. How can I help you today?",
+          ),
+        );
+      });
     }
+  }
 
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Chat with AI Bot"),

@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'package:doctor_gen_app/models/message.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
+import 'package:doctor_gen_app/models/chat.dart';
 
 class DBHelper {
   static final DBHelper _instance = DBHelper._internal();
@@ -60,9 +61,14 @@ class DBHelper {
     return id;
   }
 
-  Future<List<Map<String, dynamic>>> getAllChats() async {
+  Future<List<Chat>> getAllChats() async {
     final db = await database;
-    return await db.query('chats', orderBy: 'created_at DESC');
+    final List<Map<String, dynamic>> result = await db.query(
+      'chats',
+      orderBy: 'created_at DESC',
+    );
+    // Map each record to a Chat object
+    return result.map((map) => Chat.fromMap(map)).toList();
   }
 
   Future<void> deleteChat(int chatId) async {
@@ -84,24 +90,26 @@ class DBHelper {
     final id = await db.insert('messages', {
       'chat_id': chatId,
       'sender': message.sender.name,
-      'type': message.type.name, // FIXED
+      'type': message.type.name,
       'message': message.text,
       'media_url': message.mediaUrl,
       'timestamp': DateTime.now().toIso8601String(),
     });
 
     log("Message added to chat ID: $chatId with Message ID: $id");
-    return id;
+    return chatId;
   }
 
-  Future<List<Map<String, dynamic>>> getMessagesByChat(int chatId) async {
+  Future<List<Message>> getMessagesByChat(int chatId) async {
     final db = await database;
-    return await db.query(
+    final List<Map<String, dynamic>> result = await db.query(
       'messages',
       where: 'chat_id = ?',
       whereArgs: [chatId],
-      orderBy: 'timestamp ASC',
+      orderBy: 'id ASC',
     );
+
+    return result.map((map) => Message.fromMap(map)).toList();
   }
 
   Future<void> deleteMessagesByChat(int chatId) async {

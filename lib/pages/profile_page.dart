@@ -1,9 +1,15 @@
+import 'package:doctor_gen_app/database/db_helper.dart';
 import 'package:doctor_gen_app/widgets/bottom_nav_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
+
+  void _clearAllHistory() {
+    DBHelper().clearAllData();
+    print("All history cleared");
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -101,7 +107,7 @@ class ProfilePage extends StatelessWidget {
             leading: Icon(Icons.delete_outlined),
             title: Text("Clear History"),
             onTap: () {
-              // Handle settings action
+              _clearAllHistory();
             },
           ),
           const SizedBox(height: 20),
