@@ -18,7 +18,6 @@ class MediaMessage extends StatelessWidget {
           //container
           Container(
             padding: const EdgeInsets.all(12),
-            margin: const EdgeInsets.only(bottom: 12),
             decoration: BoxDecoration(
               color: message.backgroundColor,
               borderRadius: message.borderRadius,
@@ -74,15 +73,15 @@ class MediaMessage extends StatelessWidget {
           if (message.sender == MessageSender.bot)
             Row(
               children: [
-                IconButton.outlined(
-                  onPressed: () {},
-                  icon: const Icon(Icons.thumb_up_outlined),
-                ),
-                const SizedBox(width: 10),
-                IconButton.outlined(
-                  onPressed: () {},
-                  icon: const Icon(Icons.thumb_down_outlined),
-                ),
+                // IconButton.outlined(
+                //   onPressed: () {},
+                //   icon: const Icon(Icons.thumb_up_outlined),
+                // ),
+                // const SizedBox(width: 10),
+                // IconButton.outlined(
+                //   onPressed: () {},
+                //   icon: const Icon(Icons.thumb_down_outlined),
+                // ),
                 const Spacer(),
                 IconButton.outlined(
                   onPressed: () {

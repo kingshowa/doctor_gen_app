@@ -18,7 +18,6 @@ class TextMessage extends StatelessWidget {
           //container
           Container(
             padding: const EdgeInsets.all(14),
-            margin: const EdgeInsets.only(bottom: 12),
             constraints: BoxConstraints(maxWidth: size.width * 0.75),
             decoration: BoxDecoration(
               color: message.backgroundColor,
@@ -37,15 +36,15 @@ class TextMessage extends StatelessWidget {
           if (message.sender == MessageSender.bot)
             Row(
               children: [
-                IconButton.outlined(
-                  onPressed: () {},
-                  icon: const Icon(Icons.thumb_up_outlined),
-                ),
-                const SizedBox(width: 10),
-                IconButton.outlined(
-                  onPressed: () {},
-                  icon: const Icon(Icons.thumb_down_outlined),
-                ),
+                // IconButton.outlined(
+                //   onPressed: () {},
+                //   icon: const Icon(Icons.thumb_up_outlined),
+                // ),
+                // const SizedBox(width: 10),
+                // IconButton.outlined(
+                //   onPressed: () {},
+                //   icon: const Icon(Icons.thumb_down_outlined),
+                // ),
                 const Spacer(),
                 IconButton.outlined(
                   onPressed: () {

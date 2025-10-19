@@ -1,3 +1,5 @@
+import 'package:doctor_gen_app/database/db_helper.dart';
+import 'package:doctor_gen_app/models/chat.dart';
 import 'package:flutter/material.dart';
 import 'package:doctor_gen_app/data/tips.dart';
 import 'package:doctor_gen_app/services/tip_service.dart';
@@ -15,20 +17,31 @@ class _TipsPageState extends State<TipsPage> {
   int _currentPageIndex = 0;
   bool _isLoading = true;
 
-  // Temporary static recent chat topics (for demo)
-  final List<String> recentChats = [
-    "How to reduce stress?",
-    "Tips for better sleep",
-    "Healthy diet plan",
-    "Managing anxiety",
-    "Exercise routines for beginners",
-  ];
+  List<Chat> chats = [];
+  List<String> recentChats = [];
 
   @override
   void initState() {
     super.initState();
     _pageController = PageController();
-    _loadTips();
+    _loadChatsAndTips();
+  }
+
+  Future<void> _loadChatsAndTips() async {
+    try {
+      final dbChats = await DBHelper().getAllChats();
+      setState(() {
+        chats = dbChats;
+        recentChats = chats.map((chat) => chat.title).toList();
+      });
+
+      await _loadTips();
+    } catch (e) {
+      debugPrint("Error loading chats: $e");
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   Future<void> _loadTips() async {

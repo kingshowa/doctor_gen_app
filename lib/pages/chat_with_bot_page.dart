@@ -1,13 +1,12 @@
 import 'dart:async';
 import 'dart:io';
-import 'package:doctor_gen_app/data/staticMessages.dart';
 import 'package:doctor_gen_app/models/message.dart';
 import 'package:doctor_gen_app/widgets/media_message.dart';
 import 'package:doctor_gen_app/widgets/text_message.dart';
 import 'package:doctor_gen_app/database/db_helper.dart';
+import 'package:doctor_gen_app/services/chat_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gemini/flutter_gemini.dart';
 import 'package:image_picker/image_picker.dart';
 
 class ChatWithBotPage extends StatefulWidget {
@@ -23,22 +22,20 @@ class _ChatWithBotPageState extends State<ChatWithBotPage> {
   final ImagePicker _picker = ImagePicker();
 
   bool _isTyping = false;
-  bool _botTyping = false; // Added this
+  bool _botTyping = false;
   File? _selectedImage;
 
   List<Message> messages = [];
-  int? chatId = null;
+  int? chatId;
 
   @override
   void initState() {
     super.initState();
-
     _textController.addListener(() {
       setState(() {
         _isTyping = _textController.text.trim().isNotEmpty;
       });
     });
-
     WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToBottom());
   }
 
@@ -50,152 +47,52 @@ class _ChatWithBotPageState extends State<ChatWithBotPage> {
     });
   }
 
-  /// Send text + optional image to Gemini
   Future<void> _sendMessage() async {
     final text = _textController.text.trim();
     if (text.isEmpty && _selectedImage == null) return;
 
-    // Add user message
+    // Add user message to state
+    final userMessage = Message(
+      text: text.isNotEmpty ? text : null,
+      mediaUrl: _selectedImage?.path,
+      type: _selectedImage != null ? MessageType.media : MessageType.text,
+      sender: MessageSender.user,
+      chatId: chatId,
+    );
+
     setState(() {
-      messages.add(
-        Message(
-          text: text.isNotEmpty ? text : null,
-          mediaUrl: _selectedImage?.path,
-          type: _selectedImage != null ? MessageType.media : MessageType.text,
-          sender: MessageSender.user,
-          chatId: chatId,
-        ),
-      );
+      messages.add(userMessage);
       _textController.clear();
       _isTyping = false;
-      _botTyping = true; // Show typing bubble
+      _botTyping = true;
     });
-    // Save to DB
-    chatId = await DBHelper().addMessage(messages.last);
+
     _scrollToBottom();
 
-    try {
-      final systemPrompt =
-          "You are a helpful medical assistant. Provide accurate, concise answers (max 3 sentences). "
-          "Do not give diagnoses; advise consulting a doctor when needed. Use simple, patient-friendly language.";
-      final promptText = "$systemPrompt\n$text";
+    // Use ChatService
+    final botReply = await ChatService().sendMessage(
+      userMessage: userMessage,
+      conversationHistory: messages,
+      imageFile: _selectedImage,
+    );
 
-      String botReply = "Sorry, I couldn't process that.";
+    setState(() {
+      _botTyping = false;
+      messages.add(botReply);
+      chatId ??= botReply.chatId;
+      _selectedImage = null;
+    });
 
-      if (_selectedImage != null) {
-        final bytes = await _selectedImage!.readAsBytes();
-
-        final response = await Gemini.instance.textAndImage(
-          text: promptText,
-          images: [bytes],
-        );
-
-        botReply =
-            response?.output ??
-            response?.content?.parts?.last.toString() ??
-            botReply;
-      } else {
-        final response = await Gemini.instance.prompt(
-          parts: [Part.text(promptText)],
-        );
-
-        botReply =
-            response?.output ??
-            response?.content?.parts?.last.toString() ??
-            botReply;
-      }
-
-      // Remove typing bubble and add Gemini reply
-      setState(() {
-        _botTyping = false;
-        messages.add(
-          Message(
-            text: botReply,
-            type: MessageType.text,
-            sender: MessageSender.bot,
-            chatId: chatId,
-          ),
-        );
-        _selectedImage = null;
-        DBHelper().addMessage(messages.last);
-      });
-
-      _scrollToBottom();
-    } catch (e) {
-      setState(() {
-        _botTyping = false;
-        messages.add(
-          Message(
-            // text: "Error: $e",
-            text: "Sorry, something went wrong. Please try again.",
-            type: MessageType.text,
-            sender: MessageSender.bot,
-            chatId: chatId,
-          ),
-        );
-        _selectedImage = null;
-        DBHelper().addMessage(messages.last);
-      });
-      _scrollToBottom();
-    }
+    _scrollToBottom();
   }
 
-  /// Pick image and preview beside input field
   Future<void> _pickImage() async {
     final XFile? pickedFile = await _picker.pickImage(
       source: ImageSource.gallery,
     );
-
     if (pickedFile != null) {
-      setState(() {
-        _selectedImage = File(pickedFile.path);
-      });
+      setState(() => _selectedImage = File(pickedFile.path));
     }
-  }
-
-  @override
-  void dispose() {
-    _scrollController.dispose();
-    _textController.dispose();
-    super.dispose();
-  }
-
-  /// Typing bubble widget
-  Widget _buildTypingBubble() {
-    return Align(
-      alignment: Alignment.centerLeft,
-      child: Container(
-        padding: const EdgeInsets.all(12),
-        margin: const EdgeInsets.only(top: 8),
-        decoration: BoxDecoration(
-          color: Color(0xff2c3234),
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            _dot(),
-            const SizedBox(width: 4),
-            _dot(),
-            const SizedBox(width: 4),
-            _dot(),
-          ],
-        ),
-      ),
-    );
-  }
-
-  /// Animated dot
-  Widget _dot() {
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 500),
-      width: 6,
-      height: 6,
-      decoration: const BoxDecoration(
-        color: Colors.grey,
-        shape: BoxShape.circle,
-      ),
-    );
   }
 
   @override
@@ -211,11 +108,8 @@ class _ChatWithBotPageState extends State<ChatWithBotPage> {
 
     if (id != null) {
       final loadedMessages = await DBHelper().getMessagesByChat(id);
-      setState(() {
-        messages = loadedMessages;
-      });
-    }
-    if (id == null && messages.isEmpty) {
+      setState(() => messages = loadedMessages);
+    } else if (messages.isEmpty) {
       setState(() {
         messages.add(
           Message(
@@ -227,6 +121,37 @@ class _ChatWithBotPageState extends State<ChatWithBotPage> {
         );
       });
     }
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    _textController.dispose();
+    super.dispose();
+  }
+
+  Widget _buildTypingBubble() {
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        margin: const EdgeInsets.only(top: 8),
+        decoration: BoxDecoration(
+          color: const Color(0xff2c3234),
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: const [
+            _Dot(),
+            SizedBox(width: 4),
+            _Dot(),
+            SizedBox(width: 4),
+            _Dot(),
+          ],
+        ),
+      ),
+    );
   }
 
   @override
@@ -264,10 +189,7 @@ class _ChatWithBotPageState extends State<ChatWithBotPage> {
                   itemCount: messages.length,
                 ),
               ),
-
-              if (_botTyping)
-                _buildTypingBubble(), // 👈 Shown while Gemini is generating
-
+              if (_botTyping) _buildTypingBubble(),
               const SizedBox(height: 18),
               Row(
                 children: [
@@ -325,13 +247,35 @@ class _ChatWithBotPageState extends State<ChatWithBotPage> {
                     onPressed:
                         _isTyping || _selectedImage != null
                             ? _sendMessage
-                            : null,
+                            : () {
+                              Navigator.pushNamed(
+                                context,
+                                "/talk",
+                                arguments: {"id": chatId},
+                              );
+                            },
                   ),
                 ],
               ),
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _Dot extends StatelessWidget {
+  const _Dot();
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 500),
+      width: 6,
+      height: 6,
+      decoration: const BoxDecoration(
+        color: Colors.grey,
+        shape: BoxShape.circle,
       ),
     );
   }

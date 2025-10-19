@@ -44,7 +44,7 @@ class HomePage extends StatelessWidget {
                       const SizedBox(width: 16),
                       ActionCard(
                         icon: Icons.tips_and_updates_outlined,
-                        text: "Your daily health recommendations nd tips.",
+                        text: "Your daily health recommendations and tips.",
                         onPressed: () {
                           Navigator.pushNamed(context, '/tips');
                         },
