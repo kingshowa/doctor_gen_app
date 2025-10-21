@@ -160,7 +160,42 @@ class _ChatWithBotPageState extends State<ChatWithBotPage> {
       appBar: AppBar(
         title: const Text("Chat with AI Bot"),
         actions: [
-          IconButton(icon: const Icon(Icons.more_horiz), onPressed: () {}),
+          PopupMenuButton<String>(
+            onSelected: (value) async {
+              if (value == 'delete') {
+                if (chatId != null) {
+                  // Delete all messages in this chat
+                  await DBHelper().deleteChat(chatId!);
+                  // Optionally navigate back or show a confirmation
+                  if (mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Chat deleted successfully'),
+                      ),
+                    );
+                    // go back to home page
+                    Navigator.pushNamed(context, "/home");
+                  }
+                }
+              } else if (value == 'share') {
+                // implement share functionality
+              }
+              // Add more options as needed
+            },
+            itemBuilder:
+                (context) => [
+                  const PopupMenuItem(
+                    value: 'delete',
+                    child: Text('Delete Chat'),
+                  ),
+                  const PopupMenuItem(
+                    value: 'share',
+                    child: Text('Share Chat'),
+                  ),
+                  // Add more menu items here
+                ],
+            icon: const Icon(Icons.more_horiz),
+          ),
         ],
       ),
       body: SafeArea(

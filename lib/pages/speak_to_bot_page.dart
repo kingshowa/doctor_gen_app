@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -16,16 +15,29 @@ class SpeakToBotPage extends StatefulWidget {
   State<SpeakToBotPage> createState() => _SpeakToBotPageState();
 }
 
-class _SpeakToBotPageState extends State<SpeakToBotPage> {
+class _SpeakToBotPageState extends State<SpeakToBotPage>
+    with SingleTickerProviderStateMixin {
   final stt.SpeechToText _speech = stt.SpeechToText();
   final FlutterTts _tts = FlutterTts();
 
   bool _isListening = false;
   String _recognizedText = '';
+  String _botReply = '';
   bool _botProcessing = false;
 
   int? chatId;
   List<Message> _messages = [];
+
+  AnimationController? _pulseController;
+
+  @override
+  void initState() {
+    super.initState();
+    _pulseController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 1),
+    )..repeat(reverse: true);
+  }
 
   @override
   void didChangeDependencies() {
@@ -46,7 +58,6 @@ class _SpeakToBotPageState extends State<SpeakToBotPage> {
 
   Future<void> _startListening() async {
     bool available = await _speech.initialize();
-    print("Speech recognition available: $available");
     if (available) {
       setState(() => _isListening = true);
       _speech.listen(
@@ -62,7 +73,7 @@ class _SpeakToBotPageState extends State<SpeakToBotPage> {
   Future<void> _stopListening() async {
     await _speech.stop();
     setState(() => _isListening = false);
-    print("Stopped listening. Recognized text: $_recognizedText");
+
     if (_recognizedText.isNotEmpty) {
       await _sendVoiceMessage(_recognizedText);
       setState(() => _recognizedText = '');
@@ -70,9 +81,10 @@ class _SpeakToBotPageState extends State<SpeakToBotPage> {
   }
 
   Future<void> _sendVoiceMessage(String text) async {
-    //if (chatId == null) return;
-
-    setState(() => _botProcessing = true);
+    setState(() {
+      _botProcessing = true;
+      _botReply = '';
+    });
 
     final userMessage = Message(
       text: text,
@@ -82,20 +94,22 @@ class _SpeakToBotPageState extends State<SpeakToBotPage> {
     );
 
     try {
-      // Use ChatService to send message and get bot reply
       final botMessage = await ChatService().sendMessage(
         userMessage: userMessage,
         conversationHistory: _messages,
       );
 
-      // Update local messages list for context
       _messages.add(userMessage);
       _messages.add(botMessage);
       chatId ??= botMessage.chatId;
-      // Speak the bot reply
+
+      setState(() {
+        _botReply = botMessage.text ?? '';
+      });
+
       await _tts.speak(botMessage.text ?? '');
     } catch (e) {
-      // Optionally handle error
+      debugPrint("Error sending voice message: $e");
     } finally {
       setState(() => _botProcessing = false);
     }
@@ -105,18 +119,56 @@ class _SpeakToBotPageState extends State<SpeakToBotPage> {
   void dispose() {
     _speech.stop();
     _tts.stop();
+    _pulseController?.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final pulseValue = _pulseController?.value ?? 0.0;
+    final pulseScale = 1 + (pulseValue * 0.05); // subtle scale
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Speak to Bot"),
+        title: const Text("Talk to DoctorGen"),
         actions: [
-          IconButton(icon: const Icon(Icons.more_horiz), onPressed: () {}),
+          PopupMenuButton<String>(
+            onSelected: (value) async {
+              if (value == 'delete') {
+                if (chatId != null) {
+                  // Delete all messages in this chat
+                  await DBHelper().deleteChat(chatId!);
+                  // Optionally navigate back or show a confirmation
+                  if (mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Chat deleted successfully'),
+                      ),
+                    );
+                    // go back to home page
+                    Navigator.pushNamed(context, "/home");
+                  }
+                }
+              } else if (value == 'share') {
+                // implement share functionality
+              }
+              // Add more options as needed
+            },
+            itemBuilder:
+                (context) => [
+                  const PopupMenuItem(
+                    value: 'delete',
+                    child: Text('Delete Chat'),
+                  ),
+                  const PopupMenuItem(
+                    value: 'share',
+                    child: Text('Share Chat'),
+                  ),
+                  // Add more menu items here
+                ],
+            icon: const Icon(Icons.more_horiz),
+          ),
         ],
       ),
       body: ListView(
@@ -130,7 +182,7 @@ class _SpeakToBotPageState extends State<SpeakToBotPage> {
             ),
           ),
 
-          /// Display currently recognized speech
+          // Display recognized speech
           if (_recognizedText.isNotEmpty)
             Padding(
               padding: const EdgeInsets.only(bottom: 20),
@@ -139,24 +191,42 @@ class _SpeakToBotPageState extends State<SpeakToBotPage> {
                 textAlign: TextAlign.center,
                 style: theme.textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.bold,
-                  color: Colors.blueAccent,
+                  color: Colors.white70,
                 ),
               ),
             ),
 
-          if (_botProcessing)
-            const Center(
-              child: CircularProgressIndicator(color: Color(0xff7dd4fb)),
+          // Display bot reply while speaking
+          if (_botReply.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.only(top: 10),
+              child: Text(
+                _botReply,
+                textAlign: TextAlign.center,
+                style: theme.textTheme.titleLarge?.copyWith(
+                  color: Color(0xff7dd4fb),
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
             ),
+
+          // if (_botProcessing)
+          //   const Padding(
+          //     padding: EdgeInsets.only(top: 20),
+          //     child: Center(
+          //       child: CircularProgressIndicator(color: Color(0xff7dd4fb)),
+          //     ),
+          //   ),
         ],
       ),
+
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: Padding(
         padding: const EdgeInsets.only(bottom: 30),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            /// Navigate back to full chat page
+            // Chat page button
             SizedBox(
               width: 55,
               height: 55,
@@ -177,7 +247,7 @@ class _SpeakToBotPageState extends State<SpeakToBotPage> {
               ),
             ),
 
-            /// Microphone button
+            // Mic button (original design preserved)
             Container(
               width: 90,
               height: 90,
@@ -187,22 +257,37 @@ class _SpeakToBotPageState extends State<SpeakToBotPage> {
                   BoxShadow(color: Color(0xff2c3234), spreadRadius: 20),
                 ],
               ),
-              child: IconButton.filledTonal(
-                onPressed: _isListening ? _stopListening : _startListening,
-                icon: SvgPicture.asset(
-                  'assets/icons/mingcute--mic-2-fill.svg',
-                  width: 40,
-                  height: 40,
-                  color: Colors.white,
-                ),
-                style: IconButton.styleFrom(
-                  shape: const CircleBorder(),
-                  backgroundColor: const Color(0xff3e4143),
+              child: GestureDetector(
+                onLongPressStart: (_) => _startListening(),
+                onLongPressEnd: (_) => _stopListening(),
+                child: AnimatedBuilder(
+                  animation: _pulseController!,
+                  builder: (context, child) {
+                    return Transform.scale(
+                      scale: _isListening ? pulseScale : 1.0,
+                      child: IconButton.filledTonal(
+                        onPressed: () {},
+                        icon: SvgPicture.asset(
+                          'assets/icons/mingcute--mic-2-fill.svg',
+                          width: 40,
+                          height: 40,
+                          color: Colors.white,
+                        ),
+                        style: IconButton.styleFrom(
+                          shape: const CircleBorder(),
+                          backgroundColor:
+                              _isListening
+                                  ? Colors.redAccent
+                                  : const Color(0xff3e4143),
+                        ),
+                      ),
+                    );
+                  },
                 ),
               ),
             ),
 
-            /// More actions
+            // More button
             SizedBox(
               width: 55,
               height: 55,
