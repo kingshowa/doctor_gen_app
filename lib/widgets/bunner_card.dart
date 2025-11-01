@@ -47,7 +47,7 @@ class BunnerCard extends StatelessWidget {
                     style: ElevatedButton.styleFrom(
                       foregroundColor: Colors.white,
                     ),
-                    label: Text("Generate Now"),
+                    label: Text("Start Chatting"),
                   ),
                 ],
               ),

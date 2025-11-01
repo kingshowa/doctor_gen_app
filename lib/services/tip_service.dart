@@ -42,14 +42,14 @@ Return ONLY a valid JSON array like this:
   {
     "title": "Tip title",
     "description": "Brief tip details (1-2 sentences)",
-    "imageKey": "hydrate | food | exercise | sleep"
+    "imageKey": "hydrate | food | exercise | sleep | yoga"
   }
 ]
 Do not include any markdown, text outside JSON, or explanations.
 """;
 
       // Use Gemini’s `text()` method for lightweight generation
-      final response = await _gemini.text(prompt);
+      final response = await _gemini.prompt(parts: [Part.text(prompt)]);
 
       if (response == null || response.output == null) {
         log("Gemini returned null or empty response for tips");
@@ -97,8 +97,10 @@ Do not include any markdown, text outside JSON, or explanations.
         return 'assets/images/exercise.png';
       case 'sleep':
         return 'assets/images/sleep.png';
-      default:
+      case 'yoga':
         return 'assets/images/yoga.png';
+      default:
+        return 'assets/images/health.png';
     }
   }
 }

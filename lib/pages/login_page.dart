@@ -122,7 +122,7 @@ class LoginPage extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    SocialIconButton(icon: Icons.contacts, onTap: () {}),
+                    SocialIconButton(icon: Icons.account_circle, onTap: () {}),
                     const SizedBox(width: 20),
                     SocialIconButton(icon: Icons.facebook, onTap: () {}),
                     const SizedBox(width: 20),
@@ -138,7 +138,9 @@ class LoginPage extends StatelessWidget {
                       style: TextStyle(color: Colors.white70),
                     ),
                     TextButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.pushNamed(context, '/sign_up');
+                      },
                       child: const Text(
                         'Sign up',
                         style: TextStyle(color: Color(0xff7dd4fb)),

@@ -107,6 +107,15 @@ class _SpeakToBotPageState extends State<SpeakToBotPage>
         _botReply = botMessage.text ?? '';
       });
 
+      await _tts.setLanguage("en-US");
+      await _tts.setVoice({
+        "name": "en-us-x-sfg#male_1-local",
+        "locale": "en-US",
+      });
+      await _tts.setSpeechRate(0.5);
+      await _tts.setPitch(1.2);
+      await _tts.setVolume(1.0);
+
       await _tts.speak(botMessage.text ?? '');
     } catch (e) {
       debugPrint("Error sending voice message: $e");

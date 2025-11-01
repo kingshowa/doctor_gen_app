@@ -35,7 +35,7 @@ class ChatService {
     }
 
     final systemPrompt =
-        "You are a helpful medical assistant. Provide accurate, concise answers (max 3 sentences). "
+        "You are DoctorGen - a helpful medical assistant. Provide accurate, concise answers (max 3 sentences). "
         "Do not give diagnoses; advise consulting a doctor when needed. Use simple, patient-friendly language.";
 
     final promptText = """

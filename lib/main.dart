@@ -4,6 +4,7 @@ import 'package:doctor_gen_app/pages/speak_to_bot_page.dart';
 import 'package:doctor_gen_app/pages/tips_page.dart';
 import 'package:doctor_gen_app/pages/profile_page.dart';
 import 'package:doctor_gen_app/pages/login_page.dart';
+import 'package:doctor_gen_app/pages/sign_up_page.dart';
 import 'package:flutter/material.dart';
 import 'package:doctor_gen_app/pages/home_page.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -133,6 +134,7 @@ class MyApp extends StatelessWidget {
         '/profile': (context) => const ProfilePage(),
         '/edit_profile': (context) => const EditProfilePage(),
         '/login': (context) => LoginPage(),
+        '/sign_up': (context) => SignUpPage(),
       },
     );
   }
