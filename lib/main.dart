@@ -1,3 +1,4 @@
+import 'package:doctor_gen_app/database/db_helper.dart';
 import 'package:doctor_gen_app/pages/chat_with_bot_page.dart';
 import 'package:doctor_gen_app/pages/edit_profile_page.dart';
 import 'package:doctor_gen_app/pages/speak_to_bot_page.dart';

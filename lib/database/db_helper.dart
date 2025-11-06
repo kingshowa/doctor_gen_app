@@ -20,11 +20,23 @@ class DBHelper {
     return _db!;
   }
 
+  // Future<Database> _initDB() async {
+  //   final dbPath = await getDatabasesPath();
+  //   final path = join(dbPath, 'patient_chatbot.db');
+
+  //   return await openDatabase(path, version: 1, onCreate: _onCreate);
+  // }
+
   Future<Database> _initDB() async {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, 'patient_chatbot.db');
 
-    return await openDatabase(path, version: 1, onCreate: _onCreate);
+    return await openDatabase(
+      path,
+      version: 2, // bump version if you add new tables
+      onCreate: _onCreate,
+      onUpgrade: _onUpgrade,
+    );
   }
 
   Future<void> _onCreate(Database db, int version) async {
@@ -98,6 +110,16 @@ class DBHelper {
       ''');
 
     log("Tables created successfully");
+  }
+
+  Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
+    // Drop and recreate tables if structure changes
+    if (oldVersion < newVersion) {
+      await db.execute('DROP TABLE IF EXISTS users');
+      await db.execute('DROP TABLE IF EXISTS health_data');
+      await db.execute('DROP TABLE IF EXISTS preferences');
+      await _onCreate(db, newVersion);
+    }
   }
 
   // ------------------ CHAT METHODS ------------------
