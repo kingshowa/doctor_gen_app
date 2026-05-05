@@ -10,6 +10,37 @@ DoctorGen App is designed as a conversational health assistant that uses Google 
 
 The project demonstrates mobile app development with Flutter, AI integration, local persistence using SQLite, secure local session storage, and user-focused healthcare UI design.
 
+<h2>Screenshots</h2>
+
+<table>
+  <tr>
+    <td><img src="docs/img/login_view.png" width="220" alt="Login Screen"/></td>
+    <td><img src="docs/img/home.png" width="220" alt="Home Screen"/></td>
+    <td><img src="docs/img/chat.png" width="220" alt="Chat with DoctorGen"/></td>
+  </tr>
+  <tr>
+    <td align="center">Login</td>
+    <td align="center">Home</td>
+    <td align="center">AI Chat</td>
+  </tr>
+  <tr>
+    <td><img src="docs/img/speaking.png" width="220" alt="Voice Assistant"/></td>
+    <td><img src="docs/img/health_tip.png" width="220" alt="Health Tip"/></td>
+    <td><img src="docs/img/user_data.png" width="220" alt="Profile"/></td>
+  </tr>
+  <tr>
+    <td align="center">Voice Assistant</td>
+    <td align="center">Health Tips</td>
+    <td align="center">Profile</td>
+  </tr>
+</table>
+
+### Additional Screens
+
+<img src="docs/img/overview.png" width="700" alt="DoctorGen app overview"/>
+
+<img src="docs/img/tips.png" width="700" alt="DoctorGen health tips carousel"/>
+
 ## Key Features
 
 - AI-powered medical assistant chat
